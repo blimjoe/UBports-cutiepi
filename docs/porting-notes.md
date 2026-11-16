@@ -51,7 +51,7 @@
 已新增 `dev/cutiepi-rootfs.yaml` 和构建脚本，首轮选择上游当前 `26.04-1.x` 的 mainline 路线，属于开发镜像。配方复用通用 hooks，加入 Mesa、固件、SSH 和虚拟键盘，不沿用 PDK 的 GRUB/EFI 或 host 挂载配置。
 检查仓库依赖发现 `ubuntu-touch-mainline` 仍硬依赖 Mir 1 会话。在 Ubuntu Touch 初始化后单独运行 debos 动作，移除这个包装元包并安装 `lomiri-qt5-mir2`、`qtmir-qt5-mir2`、`ubuntu-touch-session-wayland` 和 `mir-graphics-drivers-desktop`。组装镜像时验证 Ubuntu Touch 本体和 core-mainline 保留。
 直接构建使用 debos v1.1.5，与上游 Dockerfile 一致。基础压缩包下载到构建缓存，在解包前通过上游 SHA-256 校验。live-build 配方中的 `/scratch/pkg.deb` 改为从临时构建目录读取，以适应专用 Linux VM 的直接执行模式。
-开发 SSH 私钥保存在本机 `artifacts/cutiepi-dev-key`（已 gitignore），仅公钥进入镜像；禁用密码和 root SSH 登录，每次首次启动生成独立 SSH host key。
+开发 SSH 私钥保存在本机 `artifacts/cutiepi-dev-key`（已 gitignore），仅公钥进入镜像；额外公钥（如 joe 的 RSA 钥匙）放在已跟踪的 `dev/extra-authorized-keys`，构建时追加到 `authorized_keys`。禁用密码和 root SSH 登录，每次首次启动生成独立 SSH host key。
 为首次启动启用最多 64MiB 的持久 journal，便于故障后采集日志。
 
 新增独立的 `cutiepi-deviceinfo` overlay，仅设置板卡 model 为 CutiePi、chassis-type 为 tablet，保留 CM4 compatible 和驱动选择；匹配 `/etc/deviceinfo/devices/cutiepi.yaml`，设置 GridUnit=12、原生竖屏和 tablet 类型。已离线编译并与设备树合成验证 model/chassis 属性。尚需实机验证屏幕实际方向和缩放。

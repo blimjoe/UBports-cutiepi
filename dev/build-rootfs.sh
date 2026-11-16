@@ -66,6 +66,7 @@ WantedBy=multi-user.target
 EOF
 printf '[Unit]\nRequires=cutiepi-ssh-hostkeys.service\nAfter=cutiepi-ssh-hostkeys.service\n' > "$overlay/etc/systemd/system/ssh.service.d/cutiepi.conf"
 cp /mnt/project/artifacts/cutiepi-dev-key.pub "$overlay/home/phablet/.ssh/authorized_keys"
+cat /mnt/project/dev/extra-authorized-keys >> "$overlay/home/phablet/.ssh/authorized_keys"
 printf 'PasswordAuthentication no\nKbdInteractiveAuthentication no\nPermitRootLogin no\n' > "$overlay/etc/ssh/sshd_config.d/00-cutiepi-dev.conf"
 printf 'GRID_UNIT_PX=12\nNATIVE_ORIENTATION=portrait\nFORM_FACTOR=tablet\n' > "$overlay/etc/ubuntu-touch-session.d/cutiepi.conf"
 cd "$src"

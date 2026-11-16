@@ -70,7 +70,7 @@ limactl shell --workdir=/tmp cutiepi-dev bash /mnt/project/dev/verify-kernel.sh 
 
 ## 开发根文件系统与 SD 镜像
 
-当前目标为上游 `26.04-1.x` mainline 开发分支。主机上的 `artifacts/cutiepi-dev-key.pub` 公钥进入开发镜像，对应私钥仅留在 Mac。
+当前目标为上游 `26.04-1.x` mainline 开发分支。主机上的 `artifacts/cutiepi-dev-key.pub` 公钥进入开发镜像，对应私钥仅留在 Mac；`dev/extra-authorized-keys` 中的额外公钥（每行一把）也会追加进 phablet 的 `authorized_keys`。
 
 ```sh
 limactl shell --workdir=/tmp cutiepi-dev bash /mnt/project/dev/setup-rootfs-tools.sh
