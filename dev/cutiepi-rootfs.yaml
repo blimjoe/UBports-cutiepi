@@ -37,7 +37,8 @@ actions:
       chown -R 32011:32011 /home/phablet/.ssh &&
       chmod 700 /home/phablet/.ssh &&
       chmod 600 /home/phablet/.ssh/authorized_keys &&
-      getent passwd phablet && systemctl enable ssh cutiepi-ssh-hostkeys.service
+      usermod -aG input,render,dialout phablet &&
+      getent passwd phablet && getent group input && systemctl enable ssh cutiepi-ssh-hostkeys.service
   - action: recipe
     recipe: polish.yaml
     variables:

@@ -56,6 +56,12 @@
 
 新增独立的 `cutiepi-deviceinfo` overlay，仅设置板卡 model 为 CutiePi、chassis-type 为 tablet，保留 CM4 compatible 和驱动选择；匹配 `/etc/deviceinfo/devices/cutiepi.yaml`，设置 GridUnit=12、原生竖屏和 tablet 类型。已离线编译并与设备树合成验证 model/chassis 属性。尚需实机验证屏幕实际方向和缩放。
 
+## 触摸驱动调查（2026-11-16）
+
+结论：驱动不缺。官方 `cutiepi-drivers` 仓库没有独立触摸驱动，触摸靠 `cutiepi-panel` overlay 的 fragment@8（i2c6@5d、IRQ gpio21、reset gpio26）实例化 `goodix,gt9271`，复用内核自带 goodix 驱动；rpi-6.12.y `drivers/input/touchscreen/goodix.c` 的 of_match 含 `goodix,gt9271`，本内核 `goodix_ts` 模块已编译核验。config.txt 与官方一致（`dtparam=i2c_arm=on` + `dtoverlay=cutiepi-panel`，官方要求 `#dtparam=spi=on` 保持注释，我们未启用 spi）。
+
+实机触摸无响应的已知缺口是**权限/会话**：官方移植指南要求 `gpasswd -a <user> input render dialout`，原配方漏加，已在 `cutiepi-rootfs.yaml` 补上（下一张镜像生效）。实机需 `usermod -aG input,render,dialout phablet` 后重新登录。另一个高危因素：经 SSH 手动拉起的图形会话没有 seat/logind ACL，Lomiri 读不到 `/dev/input/event*`，触摸必然失效。
+
 ## 首轮内核构建结果
 
 2026-11-16 已完成 `Image modules dtbs` 和模块安装，版本 `6.12.116-v8+`。
