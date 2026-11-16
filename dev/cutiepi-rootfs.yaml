@@ -1,0 +1,49 @@
+# Run from the pinned upstream rootfs-builder-debos checkout.
+# Reuse upstream mainline packages and hooks, not the legacy Pi/Xenial recipe.
+architecture: arm64
+actions:
+  - action: recipe
+    recipe: ubuntu-touch/common-base.yaml
+    variables:
+      architecture: arm64
+      cdimagesmirror: https://cdimage.ubuntu.com
+      skip_remove_apt_user: true
+  - action: run
+    description: Restore verified-by-apt package cache after an interrupted build
+    command: >-
+      mkdir -p "$ROOTDIR/var/cache/apt/archives";
+      if [ -d "$ARTIFACTDIR/apt-cache" ]; then
+      cp -an "$ARTIFACTDIR/apt-cache/." "$ROOTDIR/var/cache/apt/archives/";
+      fi
+  - action: recipe
+    recipe: ubuntu-touch/ubuntu-touch-common.yaml
+    variables:
+      architecture: arm64
+      variant: mainline
+      additional_package: >-
+        maliit-inputcontext-qt6 morph-browser-qt6 morph-webapp-container-qt6
+        qtubuntu-qt6 qtwayland5 qt6-wayland
+        linux-firmware initramfs-tools openssh-server libgl1-mesa-dri mesa-utils avahi-daemon
+  - action: run
+    description: Install the native Mir 2 and Wayland session
+    chroot: true
+    script: select-mir2.chroot
+  - action: overlay
+    source: cutiepi-overlay
+    destination: /
+  - action: run
+    chroot: true
+    command: >-
+      chown -R 32011:32011 /home/phablet/.ssh &&
+      chmod 700 /home/phablet/.ssh &&
+      chmod 600 /home/phablet/.ssh/authorized_keys &&
+      getent passwd phablet && systemctl enable ssh cutiepi-ssh-hostkeys.service
+  - action: recipe
+    recipe: polish.yaml
+    variables:
+      architecture: arm64
+      output_type: tarball
+      image: cutiepi-ut-mainline-rootfs.tar.gz
+  - action: pack
+    file: cutiepi-ut-mainline-rootfs.tar.gz
+    compression: gz

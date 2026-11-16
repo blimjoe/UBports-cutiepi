@@ -1,0 +1,7 @@
+[Unit]
+Description=Write CutiePi hardware boot report to the SD boot partition
+RequiresMountsFor=/boot/firmware
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/cutiepi-boot-report

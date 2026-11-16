@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+export DEBIAN_FRONTEND=noninteractive
+# The current mainline metapackage still selects the Mir 1 session. Replace
+# that wrapper with the upstream Wayland/Mir 2 session and keep the UT apps.
+apt-get install -y -o Acquire::Retries=5 --no-install-recommends \
+  lomiri-qt5-mir2 qtmir-qt5-mir2 ubuntu-touch-session-wayland \
+  mir-graphics-drivers-desktop ubuntu-touch-mainline-
+for package in ubuntu-touch ubuntu-touch-core-mainline lomiri-qt5-mir2 ubuntu-touch-session-wayland; do
+  test "$(dpkg-query -W -f='${Status}' "$package")" = 'install ok installed'
+done

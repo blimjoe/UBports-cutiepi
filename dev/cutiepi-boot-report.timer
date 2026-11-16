@@ -1,0 +1,8 @@
+[Unit]
+Description=Record CutiePi hardware status after boot
+
+[Timer]
+OnBootSec=75s
+
+[Install]
+WantedBy=timers.target

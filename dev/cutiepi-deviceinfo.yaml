@@ -1,0 +1,12 @@
+cutiepi:
+  Name: cutiepi
+  PrettyName: CutiePi
+  DeviceType: tablet
+  GridUnit: 12
+  WebkitDpr: 1.5
+  PrimaryOrientation: Portrait
+  SupportedOrientations:
+    - Portrait
+    - Landscape
+    - InvertedPortrait
+    - InvertedLandscape
