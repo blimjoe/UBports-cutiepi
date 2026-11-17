@@ -68,7 +68,7 @@ printf '[Unit]\nRequires=cutiepi-ssh-hostkeys.service\nAfter=cutiepi-ssh-hostkey
 cp /mnt/project/artifacts/cutiepi-dev-key.pub "$overlay/home/phablet/.ssh/authorized_keys"
 cat /mnt/project/dev/extra-authorized-keys >> "$overlay/home/phablet/.ssh/authorized_keys"
 printf 'PasswordAuthentication no\nKbdInteractiveAuthentication no\nPermitRootLogin no\n' > "$overlay/etc/ssh/sshd_config.d/00-cutiepi-dev.conf"
-printf 'GRID_UNIT_PX=12\nNATIVE_ORIENTATION=portrait\nFORM_FACTOR=tablet\n' > "$overlay/etc/ubuntu-touch-session.d/cutiepi.conf"
+printf 'GRID_UNIT_PX=8\nNATIVE_ORIENTATION=portrait\nFORM_FACTOR=tablet\n' > "$overlay/etc/ubuntu-touch-session.d/cutiepi.conf"
 cd "$src"
 # The dedicated Linux VM supplies mount/chroot support directly; no nested KVM.
 sudo "$HOME/go/bin/debos" --disable-fakemachine --artifactdir="$out" cutiepi-rootfs.yaml

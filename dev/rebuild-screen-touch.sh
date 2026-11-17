@@ -4,7 +4,7 @@ set -euo pipefail
 base="$HOME/cutiepi"
 source_dir="$base/build/known-good"
 images="$base/images"
-name=${1:-cutiepi-ut-mainline-screen-touch}.img
+name=${1:-cutiepi-ut-mainline-touch-1x}.img
 [[ "$name" =~ ^cutiepi-ut-[a-z0-9-]+\.img$ ]]
 test ! -e "$images/$name.gz"
 (cd "$source_dir" && sha256sum -c SHA256SUMS)

@@ -3,8 +3,9 @@ cutiepi:
   PrettyName: CutiePi
   DeviceType: tablet
   BacklightSysfsPath: /sys/class/backlight/rpi_backlight
-  GridUnit: 12
-  WebkitDpr: 1.5
+  # QtMir 0.7.2 misaligns touch coordinates at fractional output scales.
+  GridUnit: 8
+  WebkitDpr: 1
   PrimaryOrientation: Portrait
   SupportedOrientations:
     - Portrait
