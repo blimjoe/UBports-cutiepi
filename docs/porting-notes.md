@@ -124,3 +124,9 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 这些 overlay 还使用树莓派的 `__dormant__` 扩展，通用 `fdtoverlay` 直接合成报 `FDT_ERR_NOTFOUND`，不能据此判定驱动或 overlay 不兼容。
 已编译树莓派官方 `dtmerge`，对 Pi4 KMS、CutiePi 内屏/触控、UART1 顺序合成成功，结果 compatible 为 `raspberrypi,4-compute-module brcm,bcm2711`。
 工具源码固定于 `raspberrypi/utils` 的 `eac8944a8f30a8365ea57e4d20d268baadd0eb67`。
+
+## 应用与软键盘的原生 EGL 环境
+
+实机上 Maliit 和系统设置均因加载 libhybris 时出现 `cannot allocate memory in static TLS block` 而退出。原先 Mesa EGL 和 TLS 配置仅在 Lomiri 的服务环境中设置，独立的应用与键盘服务未继承。
+
+`install-native-session.sh` 生成的桌面包装脚本现在通过 `dbus-update-activation-environment --systemd` 发布 Mesa EGL 路径与 TLS 配置，在桌面启动前供后续服务使用。此修改同时覆盖镜像构建与当前用户安装。实机热更新后 Maliit 保持运行，系统设置与 Morph 浏览器进程启动成功，并建立 Wayland 会话；屏幕实际显示和点击输入框弹出键盘仍需人工验收。当前压缩镜像尚未重新打包。

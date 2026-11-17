@@ -20,9 +20,15 @@ mkdir -p "$(dirname "$wrapper")" "$greeter"
 
 # Keep the upstream Wayland and logind setup. Mir 2 rejects the old Mir
 # server environment options and has no legacy Mir socket to initialize.
+# Publish the native EGL selection to D-Bus and systemd as well: applications
+# and Maliit are separate units and do not inherit the compositor environment.
 sed -e '/^export MIR_SERVER_/d' \
     -e '/^rm -f .*MIR_SERVER_FILE/d' \
     -e '/^dbus-update-activation-environment --systemd MIR_SOCKET=/d' \
+    -e '/^export WAYLAND_DISPLAY=/a\
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json\
+export GLIBC_TUNABLES=glibc.rtld.optional_static_tls=8192\
+dbus-update-activation-environment --systemd __EGL_VENDOR_LIBRARY_FILENAMES GLIBC_TUNABLES' \
     "$upstream" > "$wrapper"
 chmod 755 "$wrapper"
 
