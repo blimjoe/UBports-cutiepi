@@ -23,7 +23,7 @@ actions:
       additional_package: >-
         maliit-inputcontext-qt6 morph-browser-qt6 morph-webapp-container-qt6
         qtubuntu-qt6 qtwayland5 qt6-wayland
-        linux-firmware initramfs-tools openssh-server libgl1-mesa-dri mesa-utils avahi-daemon
+        linux-firmware initramfs-tools openssh-server libgl1-mesa-dri mesa-utils avahi-daemon iio-sensor-proxy
   - action: run
     description: Install the native Mir 2 and Wayland session
     chroot: true

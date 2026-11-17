@@ -97,6 +97,7 @@ enable_uart=1
 dtoverlay=uart1
 [all]
 EOF
+sudo bash /mnt/project/dev/install-cutiepi-imu.sh "$work"
 partuuid=$(sudo blkid -s PARTUUID -o value "${loop}p2")
 printf 'console=tty1 root=PARTUUID=%s rootfstype=ext4 rootwait rw loglevel=7 video=HDMI-A-1:d video=HDMI-A-2:d\n' "$partuuid" | sudo tee "$work/boot/firmware/cmdline.txt" >/dev/null
 printf 'LABEL=CUTIEPIROOT / ext4 defaults,noatime 0 1\nLABEL=CUTIEPIBOOT /boot/firmware vfat defaults 0 2\n' | sudo tee "$work/etc/fstab" >/dev/null

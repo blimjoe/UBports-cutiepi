@@ -1,0 +1,2 @@
+# Keep raw angular-velocity reads available to SensorFW while Lomiri rotates.
+ACTION!="remove", SUBSYSTEM=="iio", KERNEL=="iio:device*", ATTR{name}=="mpu6050", ENV{IIO_SENSOR_PROXY_TYPE}=="*iio-poll-accel*", ENV{IIO_SENSOR_PROXY_TYPE}="iio-poll-accel"

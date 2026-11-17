@@ -47,6 +47,7 @@ case " $cmdline " in
   *' video='*) echo 'Unexpected video override in the original image' >&2; exit 1 ;;
 esac
 printf '%s video=HDMI-A-1:d video=HDMI-A-2:d\n' "$cmdline" | sudo tee "$boot/cmdline.txt" >/dev/null
+sudo bash /mnt/project/dev/install-cutiepi-imu.sh "$root"
 partuuid=$(sudo blkid -s PARTUUID -o value "${loop}p2")
 grep -Fq "root=PARTUUID=$partuuid " "$boot/cmdline.txt"
 

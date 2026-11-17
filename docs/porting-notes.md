@@ -101,6 +101,14 @@ LightDM 自动选择 CutiePi 会话，由会话启动 `ubuntu-touch-session-unen
 
 伪串口与独立 D-Bus 测试通过，涵盖分段帧、错误校验恢复、短按 ACK、D-Bus 信号顺序及长按无输出。实机诊断已收到有效电池和充电帧。新版 `cutiepi-ut-mainline-power-key.img.gz` 预先启用短按服务，并保留已验证的 1 倍触控设置。刷卡后需验证短按息屏、再次短按唤醒。
 
+## MPU6050 与屏幕旋转
+
+按 [CutiePi 官方移植指南](https://github.com/cutiepi-io/cutiepi-doc/blob/main/OSPortingGuide.md) 启用 GPIO10/11 上的 I²C5。MPU6050 使用地址 `0x68`、GPIO27 中断和原厂安装矩阵。CM4 内核已有 MPU6050 的 IIO 模块，由设备树触发加载。
+
+Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝向。SensorFW 从同一 MPU6050 读取三轴角速度，并通过 Qt `QGyroscope` 提供读数。设备规则为加速度启用轮询，使陀螺仪仍可读取 IIO 原始通道。
+
+`cutiepi-ut-mainline-imu-v1.img.gz` 已通过设备树合成和文件系统检查。模拟 IIO 的 Qt 测试同时收到竖屏、横屏和符合输入的稳定三轴角速度。上机后关闭旋转锁定，竖持平板并向两侧各转动 90°，验证显示方向及旋转后的触控。启动分区的 `cutiepi-boot-report.txt` 会记录 IIO 设备和传感器服务状态。
+
 ## 验收顺序
 
 1. 编译和检查内核 Image、模块、CM4 DTB、CutiePi overlay。
