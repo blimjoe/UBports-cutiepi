@@ -136,3 +136,5 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 原生会话没有提供 `com.lomiri.SystemCompositor.UserActivity`，Repowerd 因此无法从触摸重置空闲计时。新增 `cutiepi-user-activity.service`，以非独占方式读取 Goodix evdev 的实际触摸帧，每秒最多转发一次 `Activity(int32 0)`。设备断开后重新查找事件节点；没有输入时不发送心跳，保留空闲息屏。接口名称、路径和参数取自 Repowerd 的 `lsc_user_activity.cpp`。
 
 两个镜像组装入口均安装并启用服务。模拟输入测试覆盖空闲 SYN、触摸、重复事件节流、抬手及设备 EOF。实机安装需要 sudo，安装后仍需验证持续操作超过原息屏时长、停止操作后自动息屏和短按电源键。
+
+开发设备可按需执行 `sudo bash enable-phablet-sudo.sh`，为 phablet 启用免密 sudo。脚本检查用户存在，校验规则，并以 root:root、0440 安装 `/etc/sudoers.d/99-cutiepi-phablet`。该配置不默认加入镜像。首次执行仍需已有的管理员权限。
