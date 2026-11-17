@@ -154,3 +154,11 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 以 phablet 身份执行 `gsettings set com.lomiri.touch.system rotation-lock false` 后恢复，设置持久保存，无需重启。用户重新旋转实机时，Lomiri 日志已依次收到 Portrait、Landscape、Portrait、InvertedLandscape。此前移植配置没有丢失，此次不修改驱动，也不在每次启动强制覆盖用户的旋转锁定偏好。
 
 排查时同时读取两套 schema 的 `rotation-lock` 和 `orientation-lock`。SSH 中使用 `monitor-sensor --accel` 可能被传感器授权策略拒绝，可通过 `sudo monitor-sensor --accel` 诊断；这不等于桌面无法读取传感器。
+
+## OV5647 原生取流与相机预览
+
+官方板载摄像头为 OV5647。启动时显式加载 `ov5647` overlay，使用 Unicam + libcamera 的 rpi/vc4 管线。不要沿用旧固件相机栈的 `start_x`。当前内核已编译 AppArmor，但 `CONFIG_LSM=""`；启动参数显式启用 AppArmor 后，Click 相机应用才能通过 aa-exec 启动。
+
+原生管线需让 video 组访问 DMA heap，并在相机策略中允许 media、v4l-subdev、DMA heap、摄像头 sysfs 和 udev 元数据。ubuntu-sdk 模板对 udev 数据的显式 deny 会覆盖相机策略 allow，因此移除该显式拒绝，由其他应用的隐式拒绝继续保护。原生策略只加入 camera policy group，不关闭 AppArmor。
+
+`QT_GSTREAMER_CAMERABIN_VIDEOSRC=libcamerasrc` 将 Qt5 相机输入接到 libcamera。两个镜像入口安装依赖、权限和启动配置；已验证非 root 用户枚举 OV5647、底层连续抓取 5 帧、相机应用实时预览。用户随后报告保存照片时 SIGSEGV，横屏预览布局也需继续修复；当前不能视为完整相机适配。压缩镜像尚未重新生成。
