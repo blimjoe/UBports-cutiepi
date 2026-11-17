@@ -51,6 +51,9 @@ EOF
   exit
 fi
 
+# Seed completed tutorials before AccountsService loads the new image.
+python3 "$(dirname "$0")/complete-gesture-tutorial.py" "$root"
+
 # Run the unencrypted session target from LightDM itself. The target brings
 # up the shell and keeps both the compositor and the session alive.
 session_source="$root/usr/bin/ubuntu-touch-session"

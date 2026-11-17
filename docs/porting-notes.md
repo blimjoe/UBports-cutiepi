@@ -138,3 +138,11 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 两个镜像组装入口均安装并启用服务。模拟输入测试覆盖空闲 SYN、触摸、重复事件节流、抬手及设备 EOF。实机安装需要 sudo，安装后仍需验证持续操作超过原息屏时长、停止操作后自动息屏和短按电源键。
 
 开发设备可按需执行 `sudo bash enable-phablet-sudo.sh`，为 phablet 启用免密 sudo。脚本检查用户存在，校验规则，并以 root:root、0440 安装 `/etc/sudoers.d/99-cutiepi-phablet`。该配置不默认加入镜像。首次执行仍需已有的管理员权限。
+
+## 预先完成边缘手势教学
+
+设备安装的 AccountsService 接口注释明确说明 `demo-edges`、`DemoEdges2` 表示旧版、新版教学已运行，不能当作启用开关关闭。当前 Lomiri 的教学还包含 `left-drawer`，因此完整集合为 `left`、`top`、`right`、`left-long`、`left-drawer`。
+
+镜像会话安装时运行 `complete-gesture-tutorial.py ROOT`，补齐已完成列表并保留其他账户设置、原布尔值及未知教学项。已有配置首次修改前备份，账户文件权限为 0600。运行中的设备可用 `sudo python3 complete-gesture-tutorial.py --live` 经 AccountsService D-Bus 更新，避免直接改文件被进程缓存覆盖。
+
+实机读取文件和 D-Bus 均已完成五项，实时修复入口执行后再次确认，不需要为此重启。离线测试验证重复执行、设置保留、未知项目保留及文件权限。此变更已接入镜像构建，现有压缩镜像尚未重新打包。
