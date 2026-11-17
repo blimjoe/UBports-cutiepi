@@ -33,3 +33,6 @@ if rule not in s:
 PY
 session="$root/etc/profile.d/cutiepi-camera.sh"
 printf 'export QT_GSTREAMER_CAMERABIN_VIDEOSRC=libcamerasrc\nexport ORC_CODE=backup\n' > "$session"
+
+install -D -m 644 "$dev/cutiepi-camera-policy.service" "$root/etc/systemd/system/cutiepi-camera-policy.service"
+systemctl --root="$root" enable cutiepi-camera-policy.service

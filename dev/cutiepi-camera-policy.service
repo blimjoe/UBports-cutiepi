@@ -1,0 +1,12 @@
+[Unit]
+Description=Regenerate Click camera policies for the native libcamera pipeline
+After=apparmor.service
+Before=lightdm.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/aa-clickhook --force-regenerate
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
