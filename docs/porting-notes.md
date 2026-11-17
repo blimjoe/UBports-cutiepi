@@ -83,6 +83,14 @@
 
 `dev/install-native-session.sh` 将这些设置写入设备的 phablet 用户配置，也可在组装时安装到镜像。Lomiri 服务达到 active，内屏 DSI 输出已启用，用户确认看到了画面。还需验证重启后自动进入界面，以及 Goodix 触控坐标和息屏唤醒。原先导出的镜像早于这次修正。实机的设备树 model 仍由固件报告为 Raspberry Pi Compute Module 4，导致 CutiePi 的 DeviceInfo 配置没有自动匹配。
 
+## 内屏与触控测试镜像
+
+用 `dev/rebuild-screen-touch.sh` 从曾在实机启动的原始镜像（SHA-256 `1f3ed709f66064c1d77463e176792f734c7b273235c2f506e1b2050f355ec0d4`）生成 `cutiepi-ut-mainline-screen-touch.img.gz`。保留原内核、固件、系统包、Wi-Fi 和 SSH 设置。
+
+LightDM 自动选择 CutiePi 会话，由会话启动 `ubuntu-touch-session-unencrypted.target` 和 Lomiri。会话与 Repowerd 显式载入 CutiePi 配置，背光路径为 `/sys/class/backlight/rpi_backlight`。启动时阻止树莓派固件追加 HDMI 模式，并用小写 `:d` 禁用两个 HDMI 输出，留下 DSI 内屏作为唯一输出。旧镜像的日志已确认系统识别 Goodix 触控设备，但也启用了额外的 HDMI 输出，内屏坐标因此不是从桌面原点开始。此次仅改变显示拓扑和会话，不更改 Goodix 的驱动或校准。
+
+已检查 LightDM 生效配置、启动参数中的根分区标识及 FAT/ext4 文件系统。内屏连续启动和实际触控仍需用新镜像上机验证。
+
 ## 验收顺序
 
 1. 编译和检查内核 Image、模块、CM4 DTB、CutiePi overlay。

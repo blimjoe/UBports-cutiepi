@@ -8,7 +8,8 @@ firmware="$base/src/rpi-firmware-896fc67d292bfde6d9889d4c585bb685758dc1ad"
 rootfs_dir="$base/build/rootfs"
 rootfs="$rootfs_dir/cutiepi-ut-mainline-rootfs.tar.gz"
 images="$base/images"
-name=cutiepi-ut-mainline-dev.img
+name=${1:-cutiepi-ut-mainline-dev}.img
+[[ "$name" =~ ^cutiepi-ut-[a-z0-9-]+\.img$ ]]
 image="$images/$name"
 test -f "$rootfs"
 test -f "$kernel/SHA256SUMS"
@@ -45,6 +46,7 @@ sudo mkfs.ext4 -F -L CUTIEPIROOT "${loop}p2"
 sudo mount "${loop}p2" "$work"
 sudo tar --numeric-owner --xattrs --xattrs-include='*.*' --acls -xzf "$rootfs" -C "$work"
 sudo bash /mnt/project/dev/install-native-session.sh "$work"
+sudo install -D -m 644 /mnt/project/dev/cutiepi-deviceinfo.yaml "$work/etc/deviceinfo/devices/cutiepi.yaml"
 for package in ubuntu-touch ubuntu-touch-core-mainline lomiri-qt5-mir2 ubuntu-touch-session-wayland mir-platform-graphics-gbm-kms; do
   version=$(sudo chroot "$work" dpkg-query -W -f='${db:Status-Abbrev} ${Version}' "$package")
   [[ "$version" == 'ii  '* ]]
@@ -79,6 +81,7 @@ arm_64bit=1
 kernel=kernel8.img
 device_tree=bcm2711-rpi-cm4.dtb
 disable_overscan=1
+disable_fw_kms_setup=1
 display_auto_detect=0
 camera_auto_detect=0
 max_framebuffers=2
@@ -94,7 +97,7 @@ dtoverlay=uart1
 [all]
 EOF
 partuuid=$(sudo blkid -s PARTUUID -o value "${loop}p2")
-printf 'console=tty1 root=PARTUUID=%s rootfstype=ext4 rootwait rw loglevel=7\n' "$partuuid" | sudo tee "$work/boot/firmware/cmdline.txt" >/dev/null
+printf 'console=tty1 root=PARTUUID=%s rootfstype=ext4 rootwait rw loglevel=7 video=HDMI-A-1:d video=HDMI-A-2:d\n' "$partuuid" | sudo tee "$work/boot/firmware/cmdline.txt" >/dev/null
 printf 'LABEL=CUTIEPIROOT / ext4 defaults,noatime 0 1\nLABEL=CUTIEPIBOOT /boot/firmware vfat defaults 0 2\n' | sudo tee "$work/etc/fstab" >/dev/null
 printf 'cutiepi\n' | sudo tee "$work/etc/writable/hostname" >/dev/null
 sudo chroot "$work" depmod -a "$(cat "$kernel/kernelrelease.txt")"
@@ -108,6 +111,8 @@ sudo systemd-nspawn -q --register=no --resolv-conf=off --timezone=off --console=
 '
 sudo find "$work/etc/ssh" -maxdepth 1 -name 'ssh_host_*' -type f -delete
 sudo chroot "$work" test -x /usr/bin/lomiri
+sudo chroot "$work" sh -n /usr/local/bin/cutiepi-session
+sudo grep -Fq 'run-systemd-session ubuntu-touch-session-unencrypted.target' "$work/usr/local/bin/cutiepi-session"
 sudo test -s "$work/home/phablet/.ssh/authorized_keys"
 test "$(sudo stat -c '%a:%u:%g' "$work/etc/NetworkManager/system-connections/cutiepi-bootstrap.nmconnection")" = '600:0:0'
 test "$(sudo stat -c '%a:%u:%g' "$work/home/phablet/.ssh/authorized_keys")" = '600:32011:32011'

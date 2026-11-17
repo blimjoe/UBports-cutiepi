@@ -2,6 +2,7 @@ cutiepi:
   Name: cutiepi
   PrettyName: CutiePi
   DeviceType: tablet
+  BacklightSysfsPath: /sys/class/backlight/rpi_backlight
   GridUnit: 12
   WebkitDpr: 1.5
   PrimaryOrientation: Portrait

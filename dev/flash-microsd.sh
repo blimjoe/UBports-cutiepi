@@ -4,7 +4,8 @@ test "$(uname -s)" = Darwin
 
 project=$(cd "$(dirname "$0")/.." && pwd)
 cd "$project/artifacts"
-image=cutiepi-ut-mainline-dev.img.gz
+image=${1:-cutiepi-ut-mainline-dev.img.gz}
+[[ "$image" =~ ^cutiepi-ut-[a-z0-9-]+\.img\.gz$ ]]
 shasum -a 256 -c "$image.sha256"
 
 # Match only the external, removable USB card identified for this project.
