@@ -15,6 +15,13 @@ else
   exec_path='%h/.local/bin/cutiepi-lomiri-wrapper'
 fi
 
+keyboard="$units/maliit-server.service.d"
+mkdir -p "$keyboard"
+cat > "$keyboard/70-cutiepi-panel.conf" <<'EOF'
+[Service]
+Environment=QT_WAYLAND_SHELL_INTEGRATION=wl-shell
+EOF
+
 greeter="$units/lomiri-full-greeter.service.d"
 mkdir -p "$(dirname "$wrapper")" "$greeter"
 
@@ -50,6 +57,9 @@ Wants=lomiri-full-greeter.service
 EOF
   exit
 fi
+
+# Native input-method windows need a direct path into the shell on Mir 2.
+python3 "$(dirname "$0")/patch-native-keyboard.py" "$root"
 
 # Seed completed tutorials before AccountsService loads the new image.
 python3 "$(dirname "$0")/complete-gesture-tutorial.py" "$root"

@@ -166,3 +166,9 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 相机保存 SIGSEGV 的 GDB 调用栈位于 `preview-appsrc` 的 GStreamer 视频转换线程，执行地址落在动态生成的代码中。设置 `ORC_CODE=backup` 使用转换后备路径后，用户实机再次拍照保存未崩溃，并确认 Pictures/camera.ubports 中生成非空 JPEG。此配置已持久写入会话环境。横屏取景布局仍在排查。
 
 镜像还启用 `cutiepi-camera-policy.service`，在 AppArmor 加载后、LightDM 启动前重新生成 Click 策略，以保证修改的 camera policy group 被已有预装应用采用。实际设备已安装并启用该服务，systemd 单元校验通过。
+
+## 原生软键盘窗口显示
+
+除 EGL 启动问题外，CutiePi 的触摸、HDMI 遥控和 keyd 虚拟键盘节点使 Lomiri 判断有硬件键盘；Greeter 还会重置 always-show-osk。窗口模式会将键盘报告高度设为 0。实机恢复 Staged 平板模式，并在 CutiePi 会话中为带触摸屏的 tablet 保持 OSK 可用。
+
+Mir 2 输入法窗口还可能不产生工作区通知。InputMethod.qml 增加 SurfaceManager 原生输入法窗口兜底，保留后续窗口重建的绑定；键盘服务使用 wl-shell 避免输入面板被标为 hidden。脚本重复应用检查通过，用户已确认浏览器和切换应用后的输入框均能弹出键盘。keyd 服务已恢复运行，软件渲染测试配置和临时输入测试应用已删除。
