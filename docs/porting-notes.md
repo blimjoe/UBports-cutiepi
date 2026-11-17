@@ -146,3 +146,11 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 镜像会话安装时运行 `complete-gesture-tutorial.py ROOT`，补齐已完成列表并保留其他账户设置、原布尔值及未知教学项。已有配置首次修改前备份，账户文件权限为 0600。运行中的设备可用 `sudo python3 complete-gesture-tutorial.py --live` 经 AccountsService D-Bus 更新，避免直接改文件被进程缓存覆盖。
 
 实机读取文件和 D-Bus 均已完成五项，实时修复入口执行后再次确认，不需要为此重启。离线测试验证重复执行、设置保留、未知项目保留及文件权限。此变更已接入镜像构建，现有压缩镜像尚未重新打包。
+
+## 旋转失效时先检查桌面锁定
+
+实机曾出现 `com.lomiri.touch.system rotation-lock=true`，但 `org.ayatana.indicator.display rotation-lock=false`。此时 MPU6050、IIO Sensor Proxy 和 QtMir 方向事件仍然正常，桌面却被旧设置锁住。两个 schema 默认值均为 false；尚无证据说明哪个操作写入了旧锁定值。
+
+以 phablet 身份执行 `gsettings set com.lomiri.touch.system rotation-lock false` 后恢复，设置持久保存，无需重启。用户重新旋转实机时，Lomiri 日志已依次收到 Portrait、Landscape、Portrait、InvertedLandscape。此前移植配置没有丢失，此次不修改驱动，也不在每次启动强制覆盖用户的旋转锁定偏好。
+
+排查时同时读取两套 schema 的 `rotation-lock` 和 `orientation-lock`。SSH 中使用 `monitor-sensor --accel` 可能被传感器授权策略拒绝，可通过 `sudo monitor-sensor --accel` 诊断；这不等于桌面无法读取传感器。
