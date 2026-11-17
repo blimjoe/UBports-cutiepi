@@ -12,7 +12,7 @@ report="$boot/.cutiepi-boot-report.tmp"
     printf '\nDevice model: '
     tr '\000' '\n' < /proc/device-tree/model
     printf '\nService status:\n'
-    for service in NetworkManager ssh avahi-daemon lightdm; do
+    for service in NetworkManager ssh avahi-daemon lightdm cutiepi-power-button; do
         printf '%s: ' "$service"
         systemctl is-active "$service" || :
     done

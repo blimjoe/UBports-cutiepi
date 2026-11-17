@@ -1,0 +1,16 @@
+[Unit]
+Description=CutiePi MCU power button
+Requires=dev-ttyS0.device
+After=dbus.service dev-ttyS0.device repowerd.service
+Conflicts=serial-getty@ttyS0.service
+
+[Service]
+ExecStart=/usr/local/sbin/cutiepi-power-button
+Restart=on-failure
+RestartSec=2s
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

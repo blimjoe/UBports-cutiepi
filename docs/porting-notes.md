@@ -95,6 +95,12 @@ LightDM 自动选择 CutiePi 会话，由会话启动 `ubuntu-touch-session-unen
 
 触控修正采用 `GridUnit: 8`。QtMir 用 `GRID_UNIT_PX / 8` 作为显示缩放，原来的 12 对应 1.5 倍，使逻辑屏幕变成 533×853。实测触控坐标相对界面约放大 1.5 倍，右侧和底部会落到窗口外。切为 1 倍后，逻辑屏幕为 800×1280，四个测试点均落在对应圆内，归一化实际坐标为 (0.1563, 0.1781)、(0.8363, 0.1797)、(0.1325, 0.8195)、(0.8700, 0.8219)。新的 `cutiepi-ut-mainline-touch-1x.img.gz` 在设备配置中保留这项设置。
 
+## 电源键短按
+
+`cutiepi-power-button.service` 从 `/dev/ttyS0` 以 115200 波特率读取 CutiePi MCU 帧。收到短按时回复 `0xF1`，并通过 Repowerd 订阅的 `com.lomiri.SystemCompositor.PowerButton` 系统总线接口依次发送 `Press` 和 `Release`。系统服务使用现有 D-Bus 策略持有该名称。固件处理长按，桥接程序不会发送确认关机或直接断电命令。
+
+伪串口与独立 D-Bus 测试通过，涵盖分段帧、错误校验恢复、短按 ACK、D-Bus 信号顺序及长按无输出。实机诊断已收到有效电池和充电帧。新版 `cutiepi-ut-mainline-power-key.img.gz` 预先启用短按服务，并保留已验证的 1 倍触控设置。刷卡后需验证短按息屏、再次短按唤醒。
+
 ## 验收顺序
 
 1. 编译和检查内核 Image、模块、CM4 DTB、CutiePi overlay。

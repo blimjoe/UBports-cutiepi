@@ -4,7 +4,7 @@ set -euo pipefail
 base="$HOME/cutiepi"
 source_dir="$base/build/known-good"
 images="$base/images"
-name=${1:-cutiepi-ut-mainline-touch-1x}.img
+name=${1:-cutiepi-ut-mainline-power-key}.img
 [[ "$name" =~ ^cutiepi-ut-[a-z0-9-]+\.img$ ]]
 test ! -e "$images/$name.gz"
 (cd "$source_dir" && sha256sum -c SHA256SUMS)
@@ -34,6 +34,10 @@ boot="$root/boot/firmware"
 sudo bash /mnt/project/dev/install-native-session.sh "$root"
 sudo install -m 644 /mnt/project/dev/cutiepi-deviceinfo.yaml "$root/etc/deviceinfo/devices/cutiepi.yaml"
 sudo install -m 755 /mnt/project/dev/cutiepi-boot-report.sh "$root/usr/local/sbin/cutiepi-boot-report"
+sudo install -m 755 /mnt/project/dev/cutiepi-power-button.py "$root/usr/local/sbin/cutiepi-power-button"
+sudo install -m 644 /mnt/project/dev/cutiepi-power-button.service "$root/etc/systemd/system/cutiepi-power-button.service"
+sudo chroot "$root" python3 -c 'import dbus.lowlevel, dbus.service'
+sudo systemctl --root="$root" enable cutiepi-power-button.service
 
 # Stop HDMI mode injection by the firmware and give the first touch test a
 # single display. Lowercase :d is DRM's forced-off connector option.

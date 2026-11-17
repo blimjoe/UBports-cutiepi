@@ -63,7 +63,8 @@ for blob in brcmfmac43455-sdio.bin brcmfmac43455-sdio.clm_blob brcmfmac43455-sdi
   sudo test -s "$brcm/$blob"
 done
 sudo install -D -m 755 /mnt/project/dev/cutiepi-boot-report.sh "$work/usr/local/sbin/cutiepi-boot-report"
-for unit in cutiepi-boot-report.service cutiepi-boot-report.timer; do
+sudo install -D -m 755 /mnt/project/dev/cutiepi-power-button.py "$work/usr/local/sbin/cutiepi-power-button"
+for unit in cutiepi-boot-report.service cutiepi-boot-report.timer cutiepi-power-button.service; do
   sudo install -D -m 644 "/mnt/project/dev/$unit" "$work/etc/systemd/system/$unit"
 done
 sudo chroot "$work" nmcli --offline connection modify connection.autoconnect yes < /mnt/project/artifacts/wifi.nmconnection > /dev/null
@@ -118,7 +119,8 @@ test "$(sudo stat -c '%a:%u:%g' "$work/etc/NetworkManager/system-connections/cut
 test "$(sudo stat -c '%a:%u:%g' "$work/home/phablet/.ssh/authorized_keys")" = '600:32011:32011'
 sudo systemctl --root="$work" set-default graphical.target
 sudo test -L "$work/etc/systemd/system/display-manager.service"
-sudo systemctl --root="$work" enable NetworkManager.service avahi-daemon.service cutiepi-boot-report.timer
+sudo chroot "$work" python3 -c 'import dbus.lowlevel, dbus.service'
+sudo systemctl --root="$work" enable NetworkManager.service avahi-daemon.service cutiepi-boot-report.timer cutiepi-power-button.service
 sudo sync
 sudo umount "$work/boot/firmware"
 sudo umount "$work"
