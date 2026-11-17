@@ -1,0 +1,14 @@
+[Unit]
+Description=CutiePi touch activity for Repowerd
+After=dbus.service repowerd.service
+
+[Service]
+ExecStart=/usr/local/sbin/cutiepi-user-activity
+Restart=on-failure
+RestartSec=2s
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

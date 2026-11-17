@@ -32,6 +32,7 @@ sudo mount "${loop}p1" "$root/boot/firmware"
 boot="$root/boot/firmware"
 
 sudo bash /mnt/project/dev/install-native-session.sh "$root"
+sudo bash /mnt/project/dev/install-user-activity.sh "$root"
 sudo install -m 644 /mnt/project/dev/cutiepi-deviceinfo.yaml "$root/etc/deviceinfo/devices/cutiepi.yaml"
 sudo install -m 755 /mnt/project/dev/cutiepi-boot-report.sh "$root/usr/local/sbin/cutiepi-boot-report"
 sudo install -m 755 /mnt/project/dev/cutiepi-power-button.py "$root/usr/local/sbin/cutiepi-power-button"

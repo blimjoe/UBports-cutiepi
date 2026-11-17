@@ -130,3 +130,9 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 实机上 Maliit 和系统设置均因加载 libhybris 时出现 `cannot allocate memory in static TLS block` 而退出。原先 Mesa EGL 和 TLS 配置仅在 Lomiri 的服务环境中设置，独立的应用与键盘服务未继承。
 
 `install-native-session.sh` 生成的桌面包装脚本现在通过 `dbus-update-activation-environment --systemd` 发布 Mesa EGL 路径与 TLS 配置，在桌面启动前供后续服务使用。此修改同时覆盖镜像构建与当前用户安装。实机热更新后 Maliit 保持运行，系统设置与 Morph 浏览器进程启动成功，并建立 Wayland 会话；屏幕实际显示和点击输入框弹出键盘仍需人工验收。当前压缩镜像尚未重新打包。
+
+## 使用中误息屏
+
+原生会话没有提供 `com.lomiri.SystemCompositor.UserActivity`，Repowerd 因此无法从触摸重置空闲计时。新增 `cutiepi-user-activity.service`，以非独占方式读取 Goodix evdev 的实际触摸帧，每秒最多转发一次 `Activity(int32 0)`。设备断开后重新查找事件节点；没有输入时不发送心跳，保留空闲息屏。接口名称、路径和参数取自 Repowerd 的 `lsc_user_activity.cpp`。
+
+两个镜像组装入口均安装并启用服务。模拟输入测试覆盖空闲 SYN、触摸、重复事件节流、抬手及设备 EOF。实机安装需要 sudo，安装后仍需验证持续操作超过原息屏时长、停止操作后自动息屏和短按电源键。

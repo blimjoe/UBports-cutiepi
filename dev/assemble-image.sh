@@ -46,6 +46,7 @@ sudo mkfs.ext4 -F -L CUTIEPIROOT "${loop}p2"
 sudo mount "${loop}p2" "$work"
 sudo tar --numeric-owner --xattrs --xattrs-include='*.*' --acls -xzf "$rootfs" -C "$work"
 sudo bash /mnt/project/dev/install-native-session.sh "$work"
+sudo bash /mnt/project/dev/install-user-activity.sh "$work"
 sudo install -D -m 644 /mnt/project/dev/cutiepi-deviceinfo.yaml "$work/etc/deviceinfo/devices/cutiepi.yaml"
 for package in ubuntu-touch ubuntu-touch-core-mainline lomiri-qt5-mir2 ubuntu-touch-session-wayland mir-platform-graphics-gbm-kms; do
   version=$(sudo chroot "$work" dpkg-query -W -f='${db:Status-Abbrev} ${Version}' "$package")
