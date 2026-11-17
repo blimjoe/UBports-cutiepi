@@ -162,3 +162,5 @@ Lomiri 的 Qt 方向传感器从 `iio-sensor-proxy` 获取加速度推断的朝�
 原生管线需让 video 组访问 DMA heap，并在相机策略中允许 media、v4l-subdev、DMA heap、摄像头 sysfs 和 udev 元数据。ubuntu-sdk 模板对 udev 数据的显式 deny 会覆盖相机策略 allow，因此移除该显式拒绝，由其他应用的隐式拒绝继续保护。原生策略只加入 camera policy group，不关闭 AppArmor。
 
 `QT_GSTREAMER_CAMERABIN_VIDEOSRC=libcamerasrc` 将 Qt5 相机输入接到 libcamera。两个镜像入口安装依赖、权限和启动配置；已验证非 root 用户枚举 OV5647、底层连续抓取 5 帧、相机应用实时预览。用户随后报告保存照片时 SIGSEGV，横屏预览布局也需继续修复；当前不能视为完整相机适配。压缩镜像尚未重新生成。
+
+相机保存 SIGSEGV 的 GDB 调用栈位于 `preview-appsrc` 的 GStreamer 视频转换线程，执行地址落在动态生成的代码中。设置 `ORC_CODE=backup` 使用转换后备路径后，用户实机再次拍照保存未崩溃，并确认 Pictures/camera.ubports 中生成非空 JPEG。此配置已持久写入会话环境。横屏取景布局仍在排查。

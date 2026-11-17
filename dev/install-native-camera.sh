@@ -32,4 +32,4 @@ if rule not in s:
     group.write_text(s + '\n' + rule + '\n')
 PY
 session="$root/etc/profile.d/cutiepi-camera.sh"
-printf 'export QT_GSTREAMER_CAMERABIN_VIDEOSRC=libcamerasrc\n' > "$session"
+printf 'export QT_GSTREAMER_CAMERABIN_VIDEOSRC=libcamerasrc\nexport ORC_CODE=backup\n' > "$session"
