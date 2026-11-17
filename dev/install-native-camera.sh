@@ -36,3 +36,5 @@ printf 'export QT_GSTREAMER_CAMERABIN_VIDEOSRC=libcamerasrc\nexport ORC_CODE=bac
 
 install -D -m 644 "$dev/cutiepi-camera-policy.service" "$root/etc/systemd/system/cutiepi-camera-policy.service"
 systemctl --root="$root" enable cutiepi-camera-policy.service
+
+python3 "$dev/patch-native-camera.py" "$root"
